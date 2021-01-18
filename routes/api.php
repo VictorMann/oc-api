@@ -37,6 +37,7 @@ Route::group([
     Route::post('login', 'AuthController@login');
 
     Route::get('users', 'UserController@index');
+    Route::get('marcas', 'MarcaController@index');
 
 });
 
