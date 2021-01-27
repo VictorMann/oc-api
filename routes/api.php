@@ -39,6 +39,11 @@ Route::group([
     Route::get('users', 'UserController@index');
     Route::get('marcas', 'MarcaController@index');
 
+    Route::get('categoria/{cat}', 'CategoriaController@show');
+
+    Route::get('produto/cat/{cat}', 'ProdutoController@getCategory');
+    Route::get('produto/bestseller', 'ProdutoController@bestseller');
+
 });
 
 
