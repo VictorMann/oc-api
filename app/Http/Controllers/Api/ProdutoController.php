@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Categoria;
+use App\Models\EspecificacoesDescritivo;
 use App\Models\ProdutoDetail;
 use Illuminate\Http\Request;
 
@@ -70,6 +71,7 @@ class ProdutoController extends Controller
         $p = $p->map(function($item) {
             $o = new \stdClass();
             $o->nome        = $item->nome;
+            $o->slug        = $item->slug;
             $o->preco       = $item->preco;
             $o->image       = $item->image(2);
             $o->votos       = $item->votos;
@@ -107,6 +109,31 @@ class ProdutoController extends Controller
                 return $f and is_string($f);
             });
 
+             // se houver precos
+            if ($filters->has('preco'))
+            {
+                if (preg_match('/^(\d+)\-(\d+)$/', $filters->get('preco'), $match))
+                    $filters->put('preco', [$match[1], $match[2]]);
+                else
+                    $filters->forget('preco');
+            }
+
+
+            // Especificações
+            $espec = EspecificacoesDescritivo::select('slug')->get();
+            $espec = $filters
+            ->filter(function($v, $k) use ($espec) {
+                return $espec->where('slug', $k)->first();
+            })
+            ->map(function($v, $k) {
+                return $k . '::' . $v;
+            })
+            ->values()
+            ->toArray();
+
+            if (count($espec)) $filters->put('espec', $espec);
+
+
             $builder = $categoria->produtosFamily($filters);
 
             $total = $builder->get()->count();
@@ -122,6 +149,7 @@ class ProdutoController extends Controller
             ->map(function($item) {
                 $o = new \stdClass();
                 $o->nome        = $item->nome;
+                $o->slug        = $item->slug;
                 $o->preco       = $item->preco;
                 $o->image       = $item->image(2);
                 $o->votos       = $item->votos;
