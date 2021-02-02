@@ -40,6 +40,7 @@ Route::group([
     Route::get('marcas', 'MarcaController@index');
 
     Route::get('categoria/{cat}', 'CategoriaController@show');
+    Route::get('categoria/{cat}/sidefilter', 'CategoriaController@sideFilter');
 
     Route::get('produto/cat/{cat}', 'ProdutoController@getCategory');
     Route::get('produto/bestseller', 'ProdutoController@bestseller');
