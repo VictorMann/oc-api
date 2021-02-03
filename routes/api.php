@@ -44,6 +44,7 @@ Route::group([
 
     Route::get('produto/cat/{cat}', 'ProdutoController@getCategory');
     Route::get('produto/bestseller', 'ProdutoController@bestseller');
+    Route::get('busca', 'ProdutoController@busca');
 
 });
 

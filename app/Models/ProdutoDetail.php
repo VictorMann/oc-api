@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ProdutoDetail extends Model
 {
@@ -87,5 +88,73 @@ class ProdutoDetail extends Model
         ->where('produto_imgs.img_size_id', 1)
         ->orderBy('produto_imgs.id')
         ->get();
+    }
+
+    /**
+     *      FILTERS
+     *  @param Collection $filters
+     */
+    public static function filterSemCategoria($filters)
+    {
+        // query base
+        $builder = self::select(
+            DB::raw('produto_details.*'))
+        ->join('marcas AS m', 'm.id', '=', 'produto_details.marca_id')
+        ->whereNull('produto_details.deleted_at');
+
+        // filtros
+
+        if ($filters->has('marca'))
+        {
+            $builder->where('m.slug', $filters->get('marca'));
+        }
+
+        if ($filters->has('votos'))
+        {
+            $builder->where('produto_details.votos', $filters->get('votos'));
+        }
+
+        if ($filters->has('preco'))
+        {
+            $builder->whereBetween('produto_details.preco', $filters->get('preco'));
+        }
+
+        if ($filters->has('s') and is_array($filters->get('s')))
+        {
+            foreach ($filters->get('s') as $f)
+                $builder->where('produto_details.nome', 'LIKE', "%{$f}%");
+        }
+
+        // order
+        if ($filters->has('o') and $o = self::auxOrder($filters->get('o')))
+        {
+            $builder->orderBy($o[0], $o[1]);
+        }
+        // ordem default
+        else
+        {
+            $builder->orderBy('produto_details.created_at', 'DESC');
+        }
+
+        return $builder;
+    }
+
+    public static function auxOrder($order)
+    {
+        if (strlen($order) <> 3) return;
+
+        switch ($order)
+        {
+            case 'asc':
+                return ['produto_details.preco', 'ASC'];
+            case 'des':
+                return ['produto_details.preco', 'DESC'];
+            case 'rel':
+                return ['produto_details.promocao', 'DESC'];
+            case 'ven':
+                return ['produto_details.promocao', 'DESC'];
+            case 'ava':
+                return ['produto_details.promocao', 'DESC'];
+        }
     }
 }
