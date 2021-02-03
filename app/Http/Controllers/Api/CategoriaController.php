@@ -47,10 +47,13 @@ class CategoriaController extends Controller
             ->map(function($item) {
                 $o = new \stdClass();
                 $o->nome        = $item->nome;
+                $o->slug        = $item->slug;
                 $o->preco       = $item->preco;
                 $o->image       = $item->image(2);
                 $o->votos       = $item->votos;
                 $o->total_votos = $item->total_votos;
+                $o->promocao    = $item->promocao;
+                $o->preco_fic   = $item->preco_fic;
                 $o->semJuros = $item->getVezes() .'x R$' . $item->preco_sem_juros . ' sem juros';
                 return $o;
             });
