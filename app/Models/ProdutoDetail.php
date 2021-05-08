@@ -157,4 +157,15 @@ class ProdutoDetail extends Model
                 return ['produto_details.promocao', 'DESC'];
         }
     }
+
+    public function breadcrumb()
+    {
+        // lista de categorias
+        $breadcrumb = [];
+
+        $categoria = $this->categorias->first();
+        do array_unshift($breadcrumb, $categoria); while ($categoria = $categoria->pai);
+
+        return $breadcrumb;
+    }
 }

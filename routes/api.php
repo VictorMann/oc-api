@@ -46,6 +46,8 @@ Route::group([
     Route::get('produto/bestseller', 'ProdutoController@bestseller');
     Route::get('busca', 'ProdutoController@busca');
 
+    Route::get('produto/{slug}', 'ProdutoController@index');
+
 });
 
 

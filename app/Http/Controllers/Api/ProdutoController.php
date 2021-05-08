@@ -15,9 +15,40 @@ class ProdutoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($slug)
     {
-        //
+        $produto = ProdutoDetail::where('slug', $slug)->first();
+
+        if ($produto)
+        {
+            $breadcrumbs = $produto->breadcrumb();
+            $bcs = [];
+            foreach ($breadcrumbs as $bc)
+            {
+                array_push($bcs, [
+                    "name"  => $bc->nome,
+                    "link"  => "categoria/" . $bc->slug
+                ]);
+            }
+
+            $produto->img  = $produto->image(3);
+            $produto->imgs = $produto->imgsVars();
+
+            return response()->json([
+                'data'      => [
+                    'prod'          => $produto,
+                    'breadcrumb'    => $bcs
+                ],
+                'message'   => 'success',
+                'status'   => true,
+            ]);
+        }
+        
+        return response()->json([
+            'data'      => null,
+            'message'   => 'product not found',
+            'status'    => false
+        ]);
     }
 
     /**
